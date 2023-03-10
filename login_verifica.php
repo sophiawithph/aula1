@@ -2,10 +2,10 @@
 require('pdo.inc.php');
     $user = $_POST['user'];
     $pass = $_POST['pass'];
-    $sql = $pdo-> prepare('SELECT * FROM usuarios WHERE  username = :usr AND senha = :pass');
+    $sql = $pdo-> prepare('SELECT * FROM usuarios WHERE  username = :usr');
 
-    $sql->bindParam(1, $user);
-    $sql->bindParam(2, $pass);
+    $sql->bindParam(':usr', $user);
+   
 
     $sql->execute();
 
@@ -17,7 +17,10 @@ require('pdo.inc.php');
     if ( $sql->rowCount()){
       $user = $sql->fetch(PDO::FETCH_OBJ);
 
-
+      if (!password_verify($pass, $user->senha)){
+        header('location:login.php?erro=1');
+        die;
+      }
             session_start();
             $_SESSION['user'] = $user -> nome;
             header('location:boasvindas.php');
